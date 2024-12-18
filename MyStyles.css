@@ -1,0 +1,45 @@
+/*this is a comment*/
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    color: rgb(2, 7, 96);
+    /*text-align: center;*/
+    background-color: rgb(215, 232, 247);
+}
+a {font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-style: italic;
+    color: rgb(203, 88, 0);
+text-decoration: none;}
+
+a:hover {text-decoration: underline;}
+
+li { font-family: Arial, Helvetica, sans-serif;
+    font-weight: normal;}
+    <!--Custom Styles-->
+    .bold {
+        font-weight: bold;
+    }
+    .timesnewroman {
+        font-family: 'Times New Roman', Times, serif;
+        font-weight: bolder;
+        text-align: left;
+    }
+
+/*.homebg{
+    background-image: url('../Images/travelBackground.jpeg');
+    background-position: top right;}*/ 
+
+.box1{
+    border-width: 1px;
+    border-style: solid;
+}
+
+.box2{
+    padding: 5px;
+}
+
+.box3{
+    margin: 50px;
+}

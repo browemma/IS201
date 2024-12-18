@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Riddle Adventure</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .nav-bar {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1em;
+        }
+        .nav-bar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .riddle {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        .input-area {
+            margin-bottom: 20px;
+        }
+        .input-area input {
+            padding: 10px;
+            font-size: 1em;
+            width: 70%;
+        }
+        .input-area button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-area button:hover {
+            background-color: #0056b3;
+        }
+        .feedback {
+            font-weight: bold;
+        }
+        .score {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #333;
+        }
+        .hint {
+            font-style: italic;
+            margin-top: 10px;
+            color: #888;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: fall 2s linear infinite;
+        }
+        @keyframes fall {
+            from {
+                transform: translateY(-100px);
+            }
+            to {
+                transform: translateY(800px);
+            }
+        }
+        .incorrect {
+            font-size: 4em;
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="index.html">Home</a>
+        <a href="education.html">Education</a>
+        <a href="experience.html">Experience</a>
+        <a href="skills.html">Skills</a>
+        <a href="fromscratch.html">Travel Log</a>
+        <a href="webapp.html">Web App</a>
+        <a href="contact.html">Contact</a>
+    </div>
+    <div class="container">
+        <div class="riddle" id="riddle">Click the button below to start!</div>
+        <div class="input-area">
+            <input type="text" id="answer" placeholder="Your answer here...">
+            <button onclick="checkAnswer()" id="submitButton">Submit</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+        <button onclick="showAnswer()" style="margin-top: 20px;">Show Answer</button>
+        <button onclick="showHint()" style="margin-top: 20px;">Show Hint</button>
+        <button onclick="generateRiddle()" style="margin-top: 20px;">Next Riddle</button>
+        <div class="score" id="score">Score: 0</div>
+        <div class="hint" id="hint"></div>
+        <div class="incorrect" id="incorrect">X</div>
+    </div>
+    
+    <script>
+        const riddles = [
+            { question: "What has to be broken before you can use it?", answer: "egg", hint: "It's something you cook." },
+            { question: "I’m tall when I’m young, and I’m short when I’m old. What am I?", answer: "candle", hint: "It's often used for light." },
+            { question: "What month of the year has 28 days?", answer: "all", hint: "Think about all months." },
+            { question: "What is full of holes but still holds water?", answer: "sponge", hint: "It's found in the kitchen or bathroom." },
+            { question: "What question can you never answer yes to?", answer: "are you asleep", hint: "It's about your current state." }
+        ];
+
+        let currentRiddle = null;
+        let usedRiddles = new Set();
+        let score = 0;
+
+        function generateRiddle() {
+            if (usedRiddles.size === riddles.length) {
+                document.getElementById("riddle").textContent = "No more new riddles! Refresh the page to restart.";
+                document.getElementById("feedback").textContent = "";
+                document.getElementById("answer").value = "";
+                return;
+            }
+
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * riddles.length);
+            } while (usedRiddles.has(randomIndex));
+
+            usedRiddles.add(randomIndex);
+            currentRiddle = riddles[randomIndex];
+            document.getElementById("riddle").textContent = currentRiddle.question;
+            document.getElementById("feedback").textContent = "";
+            document.getElementById("answer").value = "";
+            document.getElementById("hint").textContent = "";
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById("answer").value.trim().toLowerCase();
+            const feedback = document.getElementById("feedback");
+            const incorrectMark = document.getElementById("incorrect");
+
+            if (!currentRiddle) {
+                feedback.textContent = "Please generate a riddle first!";
+                feedback.style.color = "red";
+                return;
+            }
+
+            if (userAnswer === currentRiddle.answer) {
+                feedback.textContent = "Correct! Well done!";
+                feedback.style.color = "green";
+                score++;
+                updateScore();
+                launchConfetti();
+            } else {
+                feedback.textContent = "Incorrect. Try again!";
+                feedback.style.color = "red";
+                showIncorrectMark();
+            }
+        }
+
+        function showAnswer() {
+            const feedback = document.getElementById("feedback");
+
+            if (!currentRiddle) {
+                feedback.textContent = "Please generate a riddle first!";
+                feedback.style.color = "red";
+                return;
+            }
+
+            feedback.textContent = `The correct answer is: ${currentRiddle.answer}`;
+            feedback.style.color = "blue";
+        }
+
+        function showHint() {
+            if (!currentRiddle) {
+                document.getElementById("hint").textContent = "Please generate a riddle first!";
+                return;
+            }
+
+            document.getElementById("hint").textContent = `Hint: ${currentRiddle.hint}`;
+        }
+
+        function updateScore() {
+            document.getElementById("score").textContent = `Score: ${score}`;
+        }
+
+        function launchConfetti() {
+            const colors = ["red", "blue", "green", "yellow", "purple", "orange"];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement("div");
+                confetti.className = "confetti";
+                confetti.style.left = Math.random() * 100 + "vw";
+                confetti.style.animationDuration = Math.random() * 2 + 1 + "s";
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function showIncorrectMark() {
+            const incorrectMark = document.getElementById("incorrect");
+            incorrectMark.style.display = "block";
+            setTimeout(() => incorrectMark.style.display = "none", 2000);
+        }
+
+        // Add event listener for Enter key to submit answer
+        document.getElementById("answer").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                document.getElementById("submitButton").click();
+            }
+        });
+
+        // Start with a random riddle
+        generateRiddle();
+    </script>
+</body>
+</html>
